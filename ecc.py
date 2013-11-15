@@ -24,8 +24,24 @@ def mulEC(Point, factor, a, p):
 	else:
 		halfPoint = mulEC(Point, factor-1, a, p)
 		solution = addEC(halfPoint, Point, a, p)
-	return Point
-	
+	return solution
+
+def main():
+	N = 182755680224874988969105090392374859247
+	A = 286458106491124997002528249079664631375
+	p = 231980187997634794246138521723892165531
+	cypherArray = []
+	cleartext = ""
+	with open(sys.argv[1], "r") as textFile:
+		for line in textFile:
+			x = line.split(' ')
+			cypherArray.append(Point(Point(int(x[0]),int(x[1])), Point(int(x[2]),int(x[3]))))
+	for cypher in cypherArray:
+		clearPoint = decrypt(cypher.x, cypher.y, N, A, p)
+		cleartext += str(chr(clearPoint.x))
+	print cleartext
+
+
 def decrypt(Y, Alpha, privateN, a, p):
 	negativePoint = mulEC(Alpha, privateN, a, p)
 	negativePoint.y = negativePoint.y*-1
@@ -42,17 +58,20 @@ def bruteForce(p, a, b, G, P):
 	return N
 
 def pulverizer(a, b): # a > b
-    x1, y1, x2, y2 = 1, 0, 0, 1
-    while b != 0:
-    	q, r = a//b, a%b
-    	x, y = x1 - q*x2, y1 - q*y2
-    	a, b, x1, y1, x2, y2 = b, r, x2, y2, x, y
-    	# print str(q)+", "+str(r)+", "+str(a)+", "+str(b)+", "+str(x1)+", "+str(y1)+", "+str(x2)+", "+str(y2)
-    return a, x1, y1
+	x1, y1, x2, y2 = 1, 0, 0, 1
+	while b != 0:
+		q, r = a//b, a%b
+		x, y = x1 - q*x2, y1 - q*y2
+		a, b, x1, y1, x2, y2 = b, r, x2, y2, x, y
+		# print str(q)+", "+str(r)+", "+str(a)+", "+str(b)+", "+str(x1)+", "+str(y1)+", "+str(x2)+", "+str(y2)
+	return a, x1, y1
 
 def modularInverse(e, phi):
-    g, x, y = pulverizer(e, phi)
-    if g != 1:
-        raise Exception('modular inverse does not exist')
-    else:
-        return x % phi
+	g, x, y = pulverizer(e, phi)
+	if g != 1:
+		raise Exception('modular inverse does not exist')
+	else:
+		return x % phi
+
+if __name__ == "__main__":
+	sys.exit(main())
